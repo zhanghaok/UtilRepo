@@ -74,6 +74,8 @@ class Utils:
                         pre = tag.split('-')[1]
                         w.append(chars[idx])
         return [[''.join(x[0]),x[1]] for x in result]
+    
+    
     def extract_entity(chars, tags):
     """
     根据标签和原始句子返回，对应的实体

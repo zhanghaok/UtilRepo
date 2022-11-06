@@ -51,9 +51,9 @@ class Utils:
      def extract_entity(chars,tags):
         """
         根据标签和原始句子返回，对应的实体
-        chars：一句话 "CLS  张    三   是我们  班    主   任   SEP"
-        tags：标签列表[O   B-LOC,I-LOC,O,O,O,B-PER,I-PER,i-PER,O]
-        返回一段话中的实体
+        chars：一句话 ["CLS","张", "三","是","我","们","班","主","任","SEP"]
+        tags：标签列表["O","B-PER","I-PER","O","O","O","B-PER","I-PER","I-PER","O"]
+        返回一段话中的实体[['张三', 'PER'], ['班主任', 'PER']]
         """
         result = []
         pre = ''
@@ -74,6 +74,43 @@ class Utils:
                         pre = tag.split('-')[1]
                         w.append(chars[idx])
         return [[''.join(x[0]),x[1]] for x in result]
+    def extract_entity(chars, tags):
+    """
+    根据标签和原始句子返回，对应的实体
+    chars：一句话 ["CLS","张", "三","是","我","们","班","主","任","SEP"]
+    tags：标签列表["O","B-PER","I-PER","O","O","O","B-PER","I-PER","I-PER","O"]
+    新的返回：[{'tokens': '张三', 'type': 'PER', 'start': 1, 'end': 2}, {'tokens': '班主任', 'type': 'PER', 'start': 6, 'end': 8}]
+    """
+    result = []
+    pre = ''
+    w = []
+    s_index = []
+    e_index = []
+    for idx, tag in enumerate(tags):
+        if not pre:
+            if tag.startswith('B'):
+                pre = tag.split('-')[1]  # pre PER
+                w.append(chars[idx])  # w 张
+                s_index.append(idx) # 1
+        else:
+            if tag == f'I-{pre}':  # I-PER True
+                w.append(chars[idx])  # w 张--->张三
+                e_index.append(idx) # 2
+            else:
+                result.append([w, pre,s_index,e_index])
+                w = []
+                pre = ''
+                s_index = []
+                e_index = []
+                if tag.startswith('B'):
+                    pre = tag.split('-')[1]
+                    w.append(chars[idx])
+    res = []
+    for x in result:
+        item = {"tokens":''.join(x[0]),"type":x[1],"start":x[2][0],"end":x[3][-1]}
+        res.append(item)
+    return res
+
         
     def read_CoNLL(filename):
         """

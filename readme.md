@@ -75,3 +75,58 @@ tensorboard --logdir=runs
 6. 查看Loss曲线
 
 在浏览器中打开`http://localhost:6006`，你应该可以看到Tensorboard的界面。在左侧导航栏中选择`Scalars`，你应该可以看到训练过程中Loss曲线的图表。
+## plot工具包画图
+```python
+data = "../roberta-pretain/May18_11-17-09_xjtuPC6.csv"
+import pandas as pd
+
+df = pd.read_csv(data)
+df
+```
+```python
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
+# X和Y轴数据
+x = df["Step"]
+y = df["Value"]
+
+# 用Matplotlib绘制折线图
+# 创建一个新的图形
+fig, ax = plt.subplots()
+# 绘制数据
+ax.plot(x, y,color="red")
+# 定义刻度格式化器函数
+def format_func(value, tick_number):
+    # 将刻度值除以1000，并添加"k"表示千
+    return f"{value/1000:.0f}k"
+# 将格式化器应用于横坐标轴
+ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_func))
+# 添加水平线
+ax.axhline(y=0.6, color='gray', linestyle='--', linewidth=1)
+ax.axhline(y=0.5, color='gray', linestyle='--', linewidth=1)
+ax.axhline(y=0.7, color='gray', linestyle='--', linewidth=1)
+ax.axhline(y=0.8, color='gray', linestyle='--', linewidth=1)
+
+# 添加垂直线
+ax.axvline(x=0, color='gray', linestyle='--', linewidth=1)
+ax.axvline(x=20000, color='gray', linestyle='--', linewidth=1)
+ax.axvline(x=40000, color='gray', linestyle='--', linewidth=1)
+ax.axvline(x=60000, color='gray', linestyle='--', linewidth=1)
+ax.axvline(x=80000, color='gray', linestyle='--', linewidth=1)
+ax.axvline(x=100000, color='gray', linestyle='--', linewidth=1)
+ax.axvline(x=120000, color='gray', linestyle='--', linewidth=1)
+ax.axvline(x=140000, color='gray', linestyle='--', linewidth=1)
+
+
+# 添加底色
+# plt.rcParams['axes.facecolor']='snow'
+plt.rcParams['axes.facecolor']='#ecd9c0'
+# 添加标题和标签
+plt.title("Tax domain-adaptive pre-training on RoBERTa")
+plt.xlabel("Step")
+plt.ylabel("Pretrain Loss(MLM)")
+
+# 显示图形
+plt.show()
+```
